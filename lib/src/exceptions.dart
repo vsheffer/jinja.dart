@@ -27,7 +27,13 @@ class TemplatesNotFound extends TemplateNotFound {
 
 /// Raised to tell the user that there is a problem with the template.
 class TemplateSyntaxError extends TemplateError {
-  const TemplateSyntaxError(super.message, {this.path, this.line});
+  const TemplateSyntaxError(super.message, {this.errorBeginPosition, this.errorEndPosition, this.scannerToken, this.path, this.line});
+
+  final int? errorBeginPosition;
+
+  final int? errorEndPosition;
+
+  final String? scannerToken;
 
   final String? path;
 

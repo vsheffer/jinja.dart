@@ -743,6 +743,7 @@ class Item extends Expression {
 
   @override
   Object? resolve(Context context) {
+    print("context = $context");
     var key = this.key.resolve(context);
     var value = this.value.resolve(context);
     return context.environment.getItem(value, key);

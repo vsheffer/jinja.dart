@@ -416,14 +416,14 @@ class Lexer {
               balancingStack.add('}');
             } else if (data == ')' || data == ']' || data == '}') {
               if (balancingStack.isEmpty) {
-                throw TemplateSyntaxError('unexpected \'$data\'');
+                throw TemplateSyntaxError('unexpected \'$data\'', errorBeginPosition: scanner.position, scannerToken: scanner.rest.split(" ")[0]);
               }
 
               var expected = balancingStack.removeLast();
 
               if (data != expected) {
                 throw TemplateSyntaxError(
-                    'unexpected \'$data\', expected \'$expected\'');
+                    'unexpected \'$data\', expected \'$expected\'', errorBeginPosition: scanner.position, scannerToken: scanner.rest.split(" ")[0]);
               }
             }
           }
@@ -488,8 +488,12 @@ class Lexer {
         if (scanner.isDone) {
           return tokens;
         } else {
+          var scannerToken = scanner.rest.split(' ')[0];
           throw TemplateSyntaxError(
-              'unexpected char ${scanner.rest[0]} at ${scanner.position}.');
+              'unexpected char ${scanner.rest[0]} at ${scanner.position}.',
+          errorBeginPosition: scanner.position,
+          errorEndPosition: scanner.position + scannerToken.length,
+          scannerToken: scannerToken);
         }
       }
     }
