@@ -11,7 +11,6 @@ const String variableStart = '{{';
 const String variableEnd = '}}';
 const String commentStart = '{#';
 const String commentEnd = '#}';
-const String? lineCommentPrefix = null;
 const String? lineStatementPrefix = null;
 const bool trimBlocks = false;
 const bool lStripBlocks = false;
