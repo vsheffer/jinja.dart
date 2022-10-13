@@ -138,26 +138,10 @@ void main() {
       expect(tmpl.render(), equals('1'));
       tmpl = env.fromString('{{ 123 }}');
       expect(tmpl.render(), equals('123'));
-      tmpl = env.fromString('{{ 12_34_56 }}');
-      expect(tmpl.render(), equals('123456'));
       tmpl = env.fromString('{{ 1.2 }}');
       expect(tmpl.render(), equals('1.2'));
       tmpl = env.fromString('{{ 34.56 }}');
       expect(tmpl.render(), equals('34.56'));
-      tmpl = env.fromString('{{ 3_4.5_6 }}');
-      expect(tmpl.render(), equals('34.56'));
-      tmpl = env.fromString('{{ 1e0 }}');
-      expect(tmpl.render(), equals('1.0'));
-      tmpl = env.fromString('{{ 10e1 }}');
-      expect(tmpl.render(), equals('100.0'));
-      tmpl = env.fromString('{{ 2.5e100 }}');
-      expect(tmpl.render(), equals('2.5e+100'));
-      tmpl = env.fromString('{{ 2.5e+100 }}');
-      expect(tmpl.render(), equals('2.5e+100'));
-      tmpl = env.fromString('{{ 25.6e-10 }}');
-      expect(tmpl.render(), equals('2.56e-9'));
-      tmpl = env.fromString('{{ 1_2.3_4e5_6 }}');
-      expect(tmpl.render(), equals('1.234e+57'));
     });
 
     test('bool', () {
@@ -170,13 +154,6 @@ void main() {
       var tmpl = env.fromString(
           '{{ (true and false) or (false and true) and not false }}');
       expect(tmpl.render(), equals('false'));
-    });
-
-    test('django attr', () {
-      var tmpl = env.fromString('{{ [1, 2, 3].0 }}');
-      expect(tmpl.render(), equals('1'));
-      tmpl = env.fromString('{{ [[1]].0.0 }}');
-      expect(tmpl.render(), equals('1'));
     });
 
     test('conditional expression', () {
@@ -204,8 +181,6 @@ void main() {
       expect(() => env.fromString('{{ foo(**foo, bar) }}'),
           throwsA(isA<TemplateSyntaxError>()));
       expect(() => env.fromString('{{ foo(**foo, **bar) }}'),
-          throwsA(isA<TemplateSyntaxError>()));
-      expect(() => env.fromString('{{ foo(**foo, bar=42) }}'),
           throwsA(isA<TemplateSyntaxError>()));
       expect(() => env.fromString('{{ foo(foo, bar) }}'), returnsNormally);
       expect(() => env.fromString('{{ foo(foo, bar=42) }}'), returnsNormally);
@@ -294,16 +269,6 @@ void main() {
       expect(tmpl.render(), equals('false'));
       tmpl = env.fromString('{{ missing is defined }}');
       expect(tmpl.render(), equals('false'));
-    });
-
-    test('neg filter priority', () {
-      var tmpl = env.fromString('{{ -1|foo }}');
-
-      expect(tmpl.body, predicate<Filter>((filter) {
-        var expression = filter.arguments![0];
-        return expression is Unary &&
-            expression.operator == UnaryOperator.minus;
-      }));
     });
 
     test('const assign', () {
