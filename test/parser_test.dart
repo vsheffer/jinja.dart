@@ -51,64 +51,6 @@ void main() {
       expect(tmpl.render(), equals('bar'));
     });
 
-    // TODO: add test: start comment
-    // test('start comment', () {
-    //   var tmpl = env.fromString('{# foo comment\nand bar comment #}'
-    //       '{% macro blub() %}foo{% endmacro %}\n{{ blub() }}');
-    //   expect(tmpl.render().trim(), equals('foor'));
-    // });
-
-    test('line syntax', () {
-      var env = Environment(
-          blockStart: '<%',
-          blockEnd: '%>',
-          variableStart: '\${',
-          variableEnd: '}',
-          commentStart: '<%#',
-          commentEnd: '%>',
-          lineCommentPrefix: '##',
-          lineStatementPrefix: '%');
-      var sequence = range(5).toList();
-      var tmpl = env.fromString('<%# regular comment %>\n% for item in seq:\n'
-          '    \${item} ## the rest of the stuff\n% endfor');
-      var result = tmpl
-          .render({'seq': sequence})
-          .split(RegExp('\\s+'))
-          .map((string) => string.trim())
-          .where((string) => string.isNotEmpty)
-          .map((string) => int.parse(string.trim()))
-          .toList();
-      expect(result, equals(sequence));
-    });
-
-    test('line syntax priority', () {
-      var seq = [1, 2];
-      var env = Environment(
-          variableStart: '\${',
-          variableEnd: '}',
-          commentStart: '/*',
-          commentEnd: '*/',
-          lineCommentPrefix: '#',
-          lineStatementPrefix: '##');
-      var tmpl =
-          env.fromString('/* ignore me.\n   I\'m a multiline comment */\n'
-              '## for item in seq:\n* \${item}          '
-              '# this is just extra stuff\n## endfor\n');
-      expect(tmpl.render({'seq': seq}).trim(), equals('* 1\n* 2'));
-      env = Environment(
-          variableStart: '\${',
-          variableEnd: '}',
-          commentStart: '/*',
-          commentEnd: '*/',
-          lineCommentPrefix: '##',
-          lineStatementPrefix: '#');
-      tmpl = env.fromString('/* ignore me.\n   I\'m a multiline comment */\n'
-          '# for item in seq:\n* \${item}          '
-          '## this is just extra stuff\n    '
-          '## extra stuff i just want to ignore\n# endfor');
-      expect(tmpl.render({'seq': seq}).trim(), equals('* 1\n\n* 2'));
-    });
-
     test('error messages', () {
       void assertError(String source, String expekted) {
         expect(

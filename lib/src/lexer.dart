@@ -147,12 +147,6 @@ class Lexer {
       <String>['comment_start', environment.commentStart, commentStartRe],
       <String>['variable_start', environment.variableStart, variableStartRe],
       <String>['block_start', environment.blockStart, blockStartRe],
-      if (environment.lineCommentPrefix != null)
-        <String>[
-          'linecomment_start',
-          environment.lineCommentPrefix!,
-          '(?:^|(?<=\\S))[^\\S\r\n]*${environment.lineCommentPrefix!}'
-        ],
       if (environment.lineStatementPrefix != null)
         <String>[
           'linestatement_start',
@@ -226,14 +220,6 @@ class Lexer {
           <String>['@missing end of raw directive'],
         ),
       ],
-      if (environment.lineCommentPrefix != null)
-        'linecomment_start': <Rule>[
-          MultiTokenRule(
-            compileRe('(.*?)()(?=\n|\$)'),
-            <String>['linecomment', 'linecomment_end'],
-            '#pop',
-          ),
-        ],
       if (environment.lineStatementPrefix != null)
         'linestatement_start': <Rule>[
           SingleTokenRule(

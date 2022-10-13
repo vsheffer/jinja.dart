@@ -67,7 +67,6 @@ class Environment {
     this.variableEnd = defaults.variableEnd,
     this.blockStart = defaults.blockStart,
     this.blockEnd = defaults.blockEnd,
-    this.lineCommentPrefix = defaults.lineCommentPrefix,
     this.lineStatementPrefix = defaults.lineStatementPrefix,
     this.leftStripBlocks = defaults.lStripBlocks,
     this.trimBlocks = defaults.trimBlocks,
@@ -132,10 +131,6 @@ class Environment {
 
   /// The string marking the end of a block
   final String blockEnd;
-
-  /// If given and a string, this will be used as prefix for line based
-  /// comments.
-  final String? lineCommentPrefix;
 
   /// If given and a string, this will be used as prefix for line based
   /// statements.
@@ -222,7 +217,6 @@ class Environment {
       commentStart,
       commentEnd,
       lineStatementPrefix,
-      lineCommentPrefix,
       trimBlocks,
       leftStripBlocks,
     );
@@ -243,7 +237,6 @@ class Environment {
         commentStart == other.commentStart &&
         commentEnd == other.commentEnd &&
         lineStatementPrefix == other.lineStatementPrefix &&
-        lineCommentPrefix == other.lineCommentPrefix &&
         trimBlocks == other.trimBlocks &&
         leftStripBlocks == other.leftStripBlocks;
   }
@@ -408,7 +401,6 @@ class Template extends Node {
     String variableEnd = defaults.variableEnd,
     String commentStart = defaults.commentStart,
     String commentEnd = defaults.commentEnd,
-    String? lineCommentPrefix = defaults.lineCommentPrefix,
     String? lineStatementPrefix = defaults.lineStatementPrefix,
     bool trimBlocks = defaults.trimBlocks,
     bool leftStripBlocks = defaults.lStripBlocks,
@@ -432,7 +424,6 @@ class Template extends Node {
       variableEnd: variableEnd,
       blockStart: blockStart,
       blockEnd: blockEnd,
-      lineCommentPrefix: lineCommentPrefix,
       lineStatementPrefix: lineStatementPrefix,
       leftStripBlocks: leftStripBlocks,
       trimBlocks: trimBlocks,
