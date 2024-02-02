@@ -5,7 +5,7 @@ final class TokenReader {
   TokenReader(Iterable<Token> tokens)
       : iterator = tokens.iterator,
         pushed = <Token>[] {
-    current = const Token.simple(0, 'initial');
+    current = const Token.simple(0, 0, 0, 'initial');
     next();
   }
 
@@ -66,7 +66,7 @@ final class TokenReader {
   }
 
   void eof() {
-    current = Token.simple(current.line + current.length, 'eof');
+    current = Token.simple(current.line + current.length, -1, -1, 'eof');
   }
 
   Token expect(String type, [String? value]) {

@@ -342,7 +342,7 @@ final class Lexer {
                 var group = match.namedGroup(name);
 
                 if (group != null) {
-                  tokens.add(Token(line, name, group));
+                  tokens.add(Token(line, match.start, match.end, name, group));
                   notFound = false;
 
                   for (var char in group.split('')) {
@@ -361,7 +361,7 @@ final class Lexer {
             } else {
               if (groups[i] case var data?) {
                 if (data.isNotEmpty || !ignoreIfEmpty.contains(token)) {
-                  tokens.add(Token(line, token, data));
+                  tokens.add(Token(line, match.start, match.end, token, data));
                 }
 
                 for (var char in data.split('')) {
@@ -373,7 +373,7 @@ final class Lexer {
                 line += newLinesStripped;
                 newLinesStripped = 0;
               } else {
-                tokens.add(Token.simple(line, token));
+                tokens.add(Token.simple(line, match.start, match.end, token));
               }
             }
           }
@@ -382,7 +382,6 @@ final class Lexer {
             scanner.position = match.start;
             continue;
           }
-
           var data = match[0];
           var token = rule.token;
 
@@ -408,10 +407,10 @@ final class Lexer {
           }
 
           if (data == null) {
-            tokens.add(Token.simple(line, token));
+            tokens.add(Token.simple(line, match.start, match.end, token));
           } else {
             if (data.isNotEmpty || !ignoreIfEmpty.contains(token)) {
-              tokens.add(Token(line, token, data));
+              tokens.add(Token(line, match.start, match.end, token, data));
             }
 
             for (var char in data.split('')) {
@@ -459,7 +458,8 @@ final class Lexer {
 
         var char = scanner.rest[0];
         var position = scanner.position;
-        throw TemplateSyntaxError('Unexpected char $char at $position');
+        throw TemplateSyntaxError('Unexpected char $char at $position',
+            start: scanner.position, end: scanner.position);
       }
     }
   }
@@ -491,13 +491,14 @@ final class Lexer {
       } else if (token.test('integer') || token.test('float')) {
         yield token.change(value: token.value.replaceAll('_', ''));
       } else if (token.test('operator')) {
-        yield Token.simple(token.line, operators[token.value]!);
+        yield Token.simple(
+            token.line, token.start, token.end, operators[token.value]!);
       } else {
         yield token;
       }
     }
 
-    yield Token.simple(source.length, 'eof');
+    yield Token.simple(source.length, -1, -1, 'eof');
   }
 
   static List<String> split(Pattern pattern, String text) {

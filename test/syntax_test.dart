@@ -200,7 +200,29 @@ void main() {
       expect(tmpl.render(), equals('FOOBAR'));
     });
 
+    test('throw me away', () {
+      var tokens = env.lex('\n\n{{ foo(*foo, bar) }}');
+      // for (var token in tokens) {
+      //   print(
+      //       "    ${token.line}, ${token.length}, ${token.start}, ${token.end}, ${token.type}, ${token.value}");
+      // }
+      try {
+        env.scan(tokens);
+      } on TemplateSyntaxError catch (e) {
+        print(e);
+      }
+    });
+
     test('function calls', () {
+      try {
+        env.fromString('\n\n{{ foo(*foo, bar) }}');
+      } on TemplateSyntaxError catch (e) {
+        print(e.line);
+        print(e.path);
+        print(e.message);
+        print(e.start);
+        print(e.end);
+      }
       expect(() => env.fromString('{{ foo(*foo, bar) }}'),
           throwsA(isA<TemplateSyntaxError>()));
       expect(() => env.fromString('{{ foo(*foo, *bar) }}'),

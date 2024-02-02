@@ -11,7 +11,10 @@ void main() {
   var env = Environment();
 
   group('TokenReader', () {
-    var testTokens = [Token(1, 'block_begin', ''), Token(2, 'block_end', '')];
+    var testTokens = [
+      Token(1, 0, 0, 'block_begin', ''),
+      Token(2, 0, 0, 'block_end', '')
+    ];
 
     test('simple', () {
       var reader = TokenReader(testTokens);

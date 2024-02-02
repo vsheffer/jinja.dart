@@ -23,8 +23,20 @@ final class Parser {
 
   Extends? extendsNode;
 
-  Never fail(String message, [int? line]) {
-    throw TemplateSyntaxError(message, line: line, path: path);
+  Never fail(String message, [int? line, int? start, int? end]) {
+    int? startInLine;
+    int? endInLine;
+    if (line != null) {
+      if (start != null) {
+        startInLine = start - line + 1;
+      }
+
+      if (end != null) {
+        endInLine = end - line + 1;
+      }
+    }
+    throw TemplateSyntaxError(message,
+        line: line, start: startInLine, end: endInLine, path: path);
   }
 
   Never failUnknownTagEof(
@@ -99,7 +111,7 @@ final class Parser {
     var token = reader.current;
 
     if (!token.test('name')) {
-      fail('Tag name expected', token.line);
+      fail('Tag name expected', token.line, token.start, token.end);
     }
 
     tagStack.add(token.value);
@@ -319,13 +331,15 @@ final class Parser {
     var name = reader.expect('name');
 
     if (blocks.any((block) => block.name == name.value)) {
-      fail("Block '${name.value}' defined twice.", reader.current.line);
+      fail("Block '${name.value}' defined twice.", reader.current.line,
+          reader.current.start, reader.current.end);
     }
 
     var scoped = reader.skipIf('name', 'scoped');
 
     if (reader.current.test('sub')) {
-      fail('Use an underscore instead.', reader.current.line);
+      fail('Use an underscore instead.', reader.current.line,
+          reader.current.start, reader.current.end);
     }
 
     var required = reader.skipIf('name', 'required');
@@ -339,7 +353,7 @@ final class Parser {
 
         default:
           fail('Required blocks can only contain comments or whitespace.',
-              token.line);
+              token.line, token.start, token.end);
       }
     }
 
@@ -347,7 +361,8 @@ final class Parser {
 
     if (maybeName.test('name')) {
       if (maybeName.value != name.value) {
-        fail("'${name.value}' expected, got ${maybeName.value}.");
+        fail("'${name.value}' expected, got ${maybeName.value}.",
+            maybeName.line, maybeName.start, maybeName.end);
       }
 
       reader.next();
@@ -368,7 +383,7 @@ final class Parser {
     var token = reader.expect('name', 'extends');
 
     if (extendsNode != null) {
-      fail('Extended multiple times.', token.line);
+      fail('Extended multiple times.', token.line, token.start, token.end);
     }
 
     var template = parseExpression(reader);
@@ -457,7 +472,7 @@ final class Parser {
 
         if (target.name.startsWith('_')) {
           fail('Names starting with an underline can not be imported.',
-              token.line);
+              token.line, token.start, token.end);
         }
 
         if (reader.skipIf('name', 'as')) {
@@ -539,13 +554,13 @@ final class Parser {
     var call = parseExpression(reader);
 
     if (call is! Call) {
-      fail('Expected call.', token.line);
+      fail('Expected call.', token.line, token.start, token.end);
     }
 
     var name = call.value;
 
     if (name is! Name) {
-      fail('Expected call macro name.', token.line);
+      fail('Expected call macro name.', token.line, token.start, token.end);
     }
 
     var body = parseStatements(reader, endCall, true);
@@ -632,6 +647,8 @@ final class Parser {
 
   Expression parseAssignNameSpace(TokenReader reader) {
     var line = reader.current.line;
+    var start = reader.current.start;
+    var end = reader.current.end;
 
     if (reader.look().test('dot')) {
       var namespace = reader.expect('name');
@@ -647,7 +664,7 @@ final class Parser {
       return name.copyWith(context: AssignContext.store);
     }
 
-    fail("Can't assign to $name.", line);
+    fail("Can't assign to $name.", line, start, end);
   }
 
   Expression parseAssignTarget(
@@ -657,6 +674,9 @@ final class Parser {
     AssignContext context = AssignContext.store,
   }) {
     var line = reader.current.line;
+    var start = reader.current.start;
+    var end = reader.current.end;
+
     Expression target;
 
     if (withTuple) {
@@ -683,7 +703,7 @@ final class Parser {
       );
     }
 
-    fail("Can't assign to $target.", line);
+    fail("Can't assign to $target.", line, start, end);
   }
 
   Do parseDo(TokenReader reader) {
@@ -996,7 +1016,8 @@ final class Parser {
         break;
 
       default:
-        fail('Unexpected ${describeToken(current)}.', current.line);
+        fail('Unexpected ${describeToken(current)}.', current.line,
+            current.start, current.end);
     }
 
     return expression;
@@ -1048,7 +1069,7 @@ final class Parser {
       if (!explicitParentheses) {
         var current = reader.current;
         fail('Expected an expression, got ${describeToken(current)}.',
-            current.line);
+            current.line, current.start, current.end);
       }
     }
 
@@ -1146,7 +1167,8 @@ final class Parser {
       }
 
       if (!attributeToken.test('integer')) {
-        fail('Expected name or number.', attributeToken.line);
+        fail('Expected name or number.', attributeToken.line,
+            attributeToken.start, attributeToken.end);
       }
 
       var key = Constant(value: int.parse(attributeToken.value));
@@ -1159,7 +1181,7 @@ final class Parser {
       return Item(key: key, value: value);
     }
 
-    fail('Expected subscript expression.', token.line);
+    fail('Expected subscript expression.', token.line, token.start, token.end);
   }
 
   Calling parseCalling(TokenReader reader) {
@@ -1170,7 +1192,8 @@ final class Parser {
 
     void ensure(bool ensure) {
       if (!ensure) {
-        fail('Invalid syntax for function call expression.', token.line);
+        fail('Invalid syntax for function call expression.', token.line,
+            token.start, token.end);
       }
     }
 
@@ -1320,7 +1343,7 @@ final class Parser {
       if (nodes.length == 1) {
         return nodes.first;
       }
-
+      print("nodes = $nodes");
       return Output(nodes: nodes);
     }
 

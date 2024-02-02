@@ -95,9 +95,11 @@ abstract final class Token {
     'tilde': '~',
   };
 
-  const factory Token(int line, String type, String value) = ValueToken;
+  const factory Token(int line, int start, int end, String type, String value) =
+      ValueToken;
 
-  const factory Token.simple(int line, String type) = SimpleToken;
+  const factory Token.simple(int line, int start, int end, String type) =
+      SimpleToken;
 
   @override
   int get hashCode {
@@ -107,6 +109,10 @@ abstract final class Token {
   int get line;
 
   int get length;
+
+  int get start;
+
+  int get end;
 
   String get type;
 
@@ -140,15 +146,17 @@ abstract final class BaseToken implements Token {
   }
 
   @override
-  Token change({int? line, String? type, String? value}) {
+  Token change({int? line, int? start, int? end, String? type, String? value}) {
     line ??= this.line;
     value ??= this.value;
+    start ??= this.start;
+    end ??= this.end;
 
     if (type != null && Token.common.containsKey(type)) {
-      return Token.simple(line, type);
+      return Token.simple(line, start, end, type);
     }
 
-    return Token(line, type ?? this.type, value);
+    return Token(line, start, end, type ?? this.type, value);
   }
 
   @override
@@ -173,13 +181,27 @@ abstract final class BaseToken implements Token {
 }
 
 final class SimpleToken extends BaseToken {
-  const SimpleToken(this.line, this.type);
+  const SimpleToken(this.line, this.start, this.end, this.type);
 
   @override
   final int line;
 
   @override
+  final int start;
+
+  @override
+  final int end;
+
+  @override
   final String type;
+
+  int get startInLine {
+    return start - line;
+  }
+
+  int get endInLine {
+    return end - line;
+  }
 
   @override
   String get value {
@@ -188,14 +210,28 @@ final class SimpleToken extends BaseToken {
 }
 
 final class ValueToken extends BaseToken {
-  const ValueToken(this.line, this.type, this.value);
+  const ValueToken(this.line, this.start, this.end, this.type, this.value);
 
   @override
   final int line;
+
+  @override
+  final int start;
+
+  @override
+  final int end;
 
   @override
   final String type;
 
   @override
   final String value;
+
+  int get startInLine {
+    return start - line;
+  }
+
+  int get endInLine {
+    return end - line;
+  }
 }

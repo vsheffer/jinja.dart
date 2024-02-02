@@ -27,11 +27,16 @@ class TemplatesNotFound extends TemplateNotFound {
 
 /// Raised to tell the user that there is a problem with the template.
 class TemplateSyntaxError extends TemplateError {
-  const TemplateSyntaxError(super.message, {this.path, this.line});
+  const TemplateSyntaxError(super.message,
+      {this.path, this.line, this.start, this.end});
 
   final String? path;
 
   final int? line;
+
+  final int? start;
+
+  final int? end;
 
   @override
   String toString() {
@@ -50,6 +55,22 @@ class TemplateSyntaxError extends TemplateError {
         result += ', line: $line';
       } else {
         result += ' line: $line';
+      }
+    }
+
+    if (start case var start?) {
+      if (result.contains(',')) {
+        result += ', start char: $start';
+      } else {
+        result += ' start char: $start';
+      }
+    }
+
+    if (end case var end?) {
+      if (result.contains(',')) {
+        result += ', end char: $end';
+      } else {
+        result += ' end char: $end';
       }
     }
 
