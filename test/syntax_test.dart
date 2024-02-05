@@ -214,15 +214,6 @@ void main() {
     // });
 
     test('function calls', () {
-      try {
-        env.fromString('\n\n{{ foo(*foo, bar) }}');
-      } on TemplateSyntaxError catch (e) {
-        print(e.line);
-        print(e.path);
-        print(e.message);
-        print(e.start);
-        print(e.end);
-      }
       expect(() => env.fromString('{{ foo(*foo, bar) }}'),
           throwsA(isA<TemplateSyntaxError>()));
       expect(() => env.fromString('{{ foo(*foo, *bar) }}'),
