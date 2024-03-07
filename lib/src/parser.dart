@@ -1373,7 +1373,8 @@ final class Parser {
           case 'variable_start':
             reader.next();
 
-            nodes.add(Interpolation(value: parseTuple(reader)));
+            var node = Interpolation(value: parseTuple(reader));
+            nodes.add(node);
 
             reader.expect('variable_end');
             break;

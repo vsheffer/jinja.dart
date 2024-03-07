@@ -394,14 +394,19 @@ final class Lexer {
               balancingStack.add('}');
             } else if (data == ')' || data == ']' || data == '}') {
               if (balancingStack.isEmpty) {
-                throw TemplateSyntaxError("Unexpected '$data'");
+                throw TemplateSyntaxError("Unexpected '$data'",
+                    char: data, start: match.start, end: match.end, line: line);
               }
 
               var expected = balancingStack.removeLast();
 
               if (data != expected) {
                 throw TemplateSyntaxError(
-                    "Unexpected '$data', expected '$expected'");
+                    "Unexpected '$data', expected '$expected'",
+                    char: data,
+                    start: match.start,
+                    end: match.end,
+                    line: line);
               }
             }
           }
@@ -459,7 +464,7 @@ final class Lexer {
         var char = scanner.rest[0];
         var position = scanner.position;
         throw TemplateSyntaxError('Unexpected char $char at $position',
-            start: scanner.position, end: scanner.position);
+            start: scanner.position, end: scanner.position, char: char);
       }
     }
   }
