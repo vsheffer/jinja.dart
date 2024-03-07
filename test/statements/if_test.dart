@@ -13,6 +13,25 @@ void main() {
       expect(tmpl.render(), equals('...'));
     });
 
+    test('if var set', () {
+      var tmpl = env.fromString('{%if foo %}{{ foo }}{% endif %}');
+      expect(tmpl.render({'foo': 'bar'}), equals('bar'));
+    });
+
+    test('if var set nested', () {
+      var tmpl = env.fromString('{%if root %}{{ root.nested }}{% endif %}');
+      expect(
+          tmpl.render({
+            'root': {'nested': 'value'}
+          }),
+          equals('value'));
+    });
+
+    test('if var not set', () {
+      var tmpl = env.fromString('{%if foo %}{{ foo }}{% endif %}');
+      expect(tmpl.render(), equals(''));
+    });
+
     test('elif', () {
       var tmpl = env.fromString('''{% if false %}XXX{% elif true
             %}...{% else %}XXX{% endif %}''');
