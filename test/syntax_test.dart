@@ -200,16 +200,14 @@ void main() {
       expect(tmpl.render(), equals('FOOBAR'));
     });
 
-    test('throw me away', () {
+    test('syntax error message newline', () {
       var tokens = env.lex('\n\n{{ foo(*foo, bar) }}');
-      // for (var token in tokens) {
-      //   print(
-      //       "    ${token.line}, ${token.length}, ${token.start}, ${token.end}, ${token.type}, ${token.value}");
-      // }
       try {
         env.scan(tokens);
       } on TemplateSyntaxError catch (e) {
-        print(e);
+        expect(e.line, equals(3));
+        expect(e.start, equals(7));
+        expect(e.end, equals(8));
       }
     });
 
