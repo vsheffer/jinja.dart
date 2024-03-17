@@ -88,6 +88,7 @@ base class Environment {
     Function finalize = defaults.finalize,
     this.loader,
     this.autoReload = true,
+    this.failOnMissingContextVariable = false,
     Map<String, Object?>? globals,
     Map<String, Function>? filters,
     Map<String, Function>? tests,
@@ -195,6 +196,12 @@ base class Environment {
   /// will reload the template. For higher performance it's possible to
   /// disable that.
   final bool autoReload;
+
+  /// If a context variable is missing this value determines if the
+  /// parser continues or throws a [TemplateContextVariableNotFoundError]
+  /// exception. [true] will throw the exception and [false] will not.  The
+  /// default is [false]
+  final bool failOnMissingContextVariable;
 
   /// A map of variables that are available in every template loaded by
   /// the environment.

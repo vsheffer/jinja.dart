@@ -100,3 +100,10 @@ class TemplateAssertionError extends TemplateError {
 class TemplateRuntimeError extends TemplateError {
   const TemplateRuntimeError([super.message]);
 }
+
+class TemplateContextVariableNotFoundError extends TemplateError {
+  final String variableName;
+
+  const TemplateContextVariableNotFoundError(super.message,
+      {required this.variableName});
+}

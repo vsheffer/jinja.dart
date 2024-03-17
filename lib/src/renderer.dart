@@ -335,10 +335,20 @@ base class StringSinkRenderer
 
   @override
   Object? visitName(Name node, StringSinkRenderContext context) {
-    return switch (node.context) {
-      AssignContext.load => context.resolve(node.name),
-      _ => node.name,
-    };
+    late Object? value;
+    if (node.context == AssignContext.load) {
+      value = context.resolve(node.name);
+    } else {
+      value = node.name;
+    }
+    if (value == null) {
+      if (context.environment.failOnMissingContextVariable) {
+        throw TemplateContextVariableNotFoundError(
+            "Context variable '${node.name}' not found.",
+            variableName: node.name);
+      }
+    }
+    return value;
   }
 
   @override
